@@ -1,9 +1,9 @@
 Mini-App Final — Técnicas de Producción Industrial de Software I
 
-Profesor: Juan José Santos
-Estudiante: Stefany Hernández
-Fecha: 07/12/2025
-Reto elegido: # VisitApp — Registro de visitas (Check-in / Check-out)
+-Profesor: Juan José Santos
+-Estudiante: Stefany Hernández
+-Fecha: 07/12/2025
+-Reto elegido: # VisitApp — Registro de visitas (Check-in / Check-out)
 
 
 ## 📌 Descripción del proyecto
