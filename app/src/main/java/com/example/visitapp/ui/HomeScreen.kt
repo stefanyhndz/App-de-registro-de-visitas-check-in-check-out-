@@ -61,14 +61,14 @@ fun MainScreen(viewModel: VisitsViewModel, onGoToHistory: () -> Unit) {
     }
 
     // --- Check-in form dialog (nuevo) --- pass separate fields to ViewModel
-    // --- Check-in form dialog (nuevo)
     if (showCheckInForm) {
         CheckInFormDialog(
             onConfirm = { name, phone, notes ->
-                // Usar llamadas seguras + takeIf para manejar posibles String? y evitar ifBlank sobre nullable
+                // dado que CheckInFormDialog pasa name y phone como NON-null (String),
+                // usamos takeIf para convertir cadenas vacías a null de forma segura.
                 viewModel.checkIn(
-                    name?.takeIf { it.isNotBlank() },
-                    phone?.takeIf { it.isNotBlank() },
+                    name.takeIf { it.isNotBlank() },
+                    phone.takeIf { it.isNotBlank() },
                     notes?.takeIf { it.isNotBlank() }
                 )
                 showCheckInForm = false
@@ -158,7 +158,8 @@ fun VisitCard(visit: Visit, onEditNotes: () -> Unit, onDelete: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        // Recomendado para Material3 moderno:
+        elevation = CardDefaults.outlinedCardElevation() // o CardDefaults.cardElevation() según tu versión
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             val fmt = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
@@ -190,7 +191,7 @@ fun VisitCard(visit: Visit, onEditNotes: () -> Unit, onDelete: () -> Unit) {
                     // Notas separado
                     if (!visit.notes.isNullOrBlank()) {
                         Text(text = "Notas:", style = MaterialTheme.typography.bodySmall)
-                        Text(text = visit.notes ?: "", style = MaterialTheme.typography.bodySmall)
+                        Text(text = visit.notes.orEmpty(), style = MaterialTheme.typography.bodySmall)
                     } else {
                         Text(text = "Notas: --", style = MaterialTheme.typography.bodySmall)
                     }

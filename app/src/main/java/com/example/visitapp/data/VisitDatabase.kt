@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Visit::class], version = 2)
+@Database(entities = [Visit::class], version = 2, exportSchema = false)
 abstract class VisitDatabase : RoomDatabase() {
     abstract fun visitDao(): VisitDao
 
@@ -33,9 +33,9 @@ abstract class VisitDatabase : RoomDatabase() {
 
         // Migración 1 -> 2: añade columnas name y phone (ambas NULLABLE)
         private val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE visits ADD COLUMN name TEXT")
-                database.execSQL("ALTER TABLE visits ADD COLUMN phone TEXT")
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE visits ADD COLUMN name TEXT")
+                db.execSQL("ALTER TABLE visits ADD COLUMN phone TEXT")
             }
         }
     }
