@@ -6,6 +6,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "visits")
 data class Visit(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val name: String? = null,
+    val phone: String? = null,
     val checkInTime: Long,
     val checkOutTime: Long? = null,
     val notes: String? = null

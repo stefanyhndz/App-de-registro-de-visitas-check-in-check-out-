@@ -24,7 +24,6 @@ fun MainScreen(viewModel: VisitsViewModel, onGoToHistory: () -> Unit) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // nombre unificado: showCheckInForm
     var showCheckInForm by remember { mutableStateOf(false) }
     var editNotesForVisit by remember { mutableStateOf<Visit?>(null) }
     var confirmDeleteForVisit by remember { mutableStateOf<Visit?>(null) }
@@ -61,17 +60,17 @@ fun MainScreen(viewModel: VisitsViewModel, onGoToHistory: () -> Unit) {
         }
     }
 
+    // --- Check-in form dialog (nuevo) --- pass separate fields to ViewModel
     // --- Check-in form dialog (nuevo)
     if (showCheckInForm) {
         CheckInFormDialog(
             onConfirm = { name, phone, notes ->
-                // Componemos un string simple para guardar en la columna 'notes'
-                val finalNotes = buildString {
-                    append("Nombre: ${name.trim()}")
-                    if (phone.isNotBlank()) append("\nTeléfono: ${phone.trim()}")
-                    if (notes?.isNotBlank() == true) append("\nNotas: ${notes.trim()}")
-                }
-                viewModel.checkInWithNotes(finalNotes.ifBlank { null })
+                // Usar llamadas seguras + takeIf para manejar posibles String? y evitar ifBlank sobre nullable
+                viewModel.checkIn(
+                    name?.takeIf { it.isNotBlank() },
+                    phone?.takeIf { it.isNotBlank() },
+                    notes?.takeIf { it.isNotBlank() }
+                )
                 showCheckInForm = false
             },
             onDismiss = { showCheckInForm = false }
@@ -120,7 +119,7 @@ fun MainScreen(viewModel: VisitsViewModel, onGoToHistory: () -> Unit) {
     }
 }
 
-/* ---------------- UI pieces (unchanged behavior) ---------------- */
+/* ---------------- UI pieces ---------------- */
 
 @Composable
 fun ActionButtons(state: VisitsUiState, onCheckIn: () -> Unit, onCheckOut: () -> Unit) {
@@ -166,7 +165,6 @@ fun VisitCard(visit: Visit, onEditNotes: () -> Unit, onDelete: () -> Unit) {
             val entrada = safeFormat(fmt, visit.checkInTime)
             val salida = visit.checkOutTime?.let { safeFormat(fmt, it) } ?: "--"
             val dur = visit.checkOutTime?.let { durationText(visit.checkInTime, it) } ?: "En curso"
-            val notas = visit.notes ?: "--"
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column(modifier = Modifier.weight(1f)) {
@@ -175,8 +173,27 @@ fun VisitCard(visit: Visit, onEditNotes: () -> Unit, onDelete: () -> Unit) {
                     Text(text = "Salida: $salida", style = MaterialTheme.typography.bodyMedium)
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(text = "Duración: $dur", style = MaterialTheme.typography.bodySmall)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(text = "Notas: $notas", style = MaterialTheme.typography.bodySmall)
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Nombre separado
+                    if (!visit.name.isNullOrBlank()) {
+                        Text(text = "Nombre: ${visit.name}", style = MaterialTheme.typography.bodyMedium)
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+
+                    // Teléfono separado
+                    if (!visit.phone.isNullOrBlank()) {
+                        Text(text = "Teléfono: ${visit.phone}", style = MaterialTheme.typography.bodySmall)
+                        Spacer(modifier = Modifier.height(6.dp))
+                    }
+
+                    // Notas separado
+                    if (!visit.notes.isNullOrBlank()) {
+                        Text(text = "Notas:", style = MaterialTheme.typography.bodySmall)
+                        Text(text = visit.notes ?: "", style = MaterialTheme.typography.bodySmall)
+                    } else {
+                        Text(text = "Notas: --", style = MaterialTheme.typography.bodySmall)
+                    }
                 }
                 Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     IconButton(onClick = onEditNotes) {
@@ -191,7 +208,7 @@ fun VisitCard(visit: Visit, onEditNotes: () -> Unit, onDelete: () -> Unit) {
     }
 }
 
-/* Helper: Check-in form dialog (nuevo) */
+/* Helper: Check-in form dialog */
 @Composable
 fun CheckInFormDialog(
     onConfirm: (name: String, phone: String, notes: String?) -> Unit,
@@ -249,7 +266,7 @@ fun CheckInFormDialog(
     )
 }
 
-/* Helper: Dialog para editar notas (existente) */
+/* Helper: Dialog para editar notas */
 @Composable
 fun NotesDialog(initial: String, title: String = "Notas", onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
     var text by remember { mutableStateOf(initial) }
@@ -296,7 +313,7 @@ fun ConfirmDialog(title: String, text: String, onConfirm: () -> Unit, onDismiss:
     )
 }
 
-/* Utils */
+/* Utils (puedes mantener las tuyas si ya existen) */
 fun safeFormat(fmt: SimpleDateFormat, time: Long): String = try {
     fmt.format(Date(time))
 } catch (_: Exception) { "--" }

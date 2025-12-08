@@ -12,14 +12,6 @@ data class VisitsUiState(
     val activeVisitId: Long? = null
 )
 
-/**
- * ViewModel que expone:
- *  - allVisits: historial completo (StateFlow)
- *  - activeVisits: solo visitas activas (StateFlow)
- *  - uiState: combinacion (opcional) para UI que lo requiera
- *
- * Provee funciones para check-in, check-out, updateNotes, delete y obtener visita por id.
- */
 class VisitsViewModel(private val repo: VisitRepository) : ViewModel() {
 
     // Historial completo
@@ -32,7 +24,7 @@ class VisitsViewModel(private val repo: VisitRepository) : ViewModel() {
         repo.activeVisits
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // UI state combinando ambos (útil si tienes pantallas que necesitan ambos datos)
+    // UI combinado (historial + id activo)
     private val _uiState: StateFlow<VisitsUiState> = combine(allVisits, activeVisits) { all, active ->
         val activeId = active.firstOrNull()?.id
         VisitsUiState(visits = all, activeVisitId = activeId)
@@ -40,23 +32,25 @@ class VisitsViewModel(private val repo: VisitRepository) : ViewModel() {
 
     val uiState: StateFlow<VisitsUiState> = _uiState
 
-    /**
-     * Check-in: crea una nueva visita con la nota (notes) recibida.
-     */
-    fun checkInWithNotes(notes: String?) {
+    /** Check-in: ahora acepta name, phone y notes por separado */
+    fun checkIn(name: String?, phone: String?, notes: String?) {
         viewModelScope.launch {
             val visit = Visit(
+                name = name?.takeIf { it.isNotBlank() },
+                phone = phone?.takeIf { it.isNotBlank() },
                 checkInTime = System.currentTimeMillis(),
-                notes = notes
+                notes = notes?.takeIf { it.isNotBlank() }
             )
             repo.insertVisit(visit)
         }
     }
 
-    /**
-     * Check-out del primer registro activo (si existe).
-     * Alternativamente podrías proporcionar el id a la función.
-     */
+    /** Mantener compatibilidad: si antes existía checkInWithNotes */
+    fun checkInWithNotes(notes: String?) {
+        // si se usa en algún lugar legacy, lo traducimos a la nueva función sin name/phone
+        checkIn(null, null, notes)
+    }
+
     fun checkOutCurrent() {
         val active = activeVisits.value.firstOrNull() ?: return
         viewModelScope.launch {
@@ -64,46 +58,29 @@ class VisitsViewModel(private val repo: VisitRepository) : ViewModel() {
         }
     }
 
-    /**
-     * Check-out por id explícito
-     */
     fun checkOutById(id: Long) {
         viewModelScope.launch {
             repo.checkOut(id)
         }
     }
 
-    /**
-     * Actualizar notas
-     */
     fun updateNotes(id: Long, notes: String?) {
         viewModelScope.launch {
             repo.updateNotes(id, notes)
         }
     }
 
-    /**
-     * Borrar visita
-     */
     fun deleteVisit(id: Long) {
         viewModelScope.launch {
             repo.delete(id)
         }
     }
 
-    /**
-     * Obtener visita por id (suspend, útil en screens que necesitan cargar detalle)
-     */
     suspend fun getVisitById(id: Long): Visit? = repo.getById(id)
 
-    /**
-     * Reinsertar una visita (por ejemplo: undo). Se usa para reinsertar un objeto Visit completo.
-     */
     fun reinsertVisit(visit: Visit) {
         viewModelScope.launch {
             repo.insertVisit(visit)
         }
     }
 }
-
-

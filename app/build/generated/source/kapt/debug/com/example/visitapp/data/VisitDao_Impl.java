@@ -47,23 +47,33 @@ public final class VisitDao_Impl implements VisitDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `visits` (`id`,`checkInTime`,`checkOutTime`,`notes`) VALUES (nullif(?, 0),?,?,?)";
+        return "INSERT OR REPLACE INTO `visits` (`id`,`name`,`phone`,`checkInTime`,`checkOutTime`,`notes`) VALUES (nullif(?, 0),?,?,?,?,?)";
       }
 
       @Override
       protected void bind(@NonNull final SupportSQLiteStatement statement,
           @Nullable final Visit entity) {
         statement.bindLong(1, entity.getId());
-        statement.bindLong(2, entity.getCheckInTime());
-        if (entity.getCheckOutTime() == null) {
+        if (entity.getName() == null) {
+          statement.bindNull(2);
+        } else {
+          statement.bindString(2, entity.getName());
+        }
+        if (entity.getPhone() == null) {
           statement.bindNull(3);
         } else {
-          statement.bindLong(3, entity.getCheckOutTime());
+          statement.bindString(3, entity.getPhone());
+        }
+        statement.bindLong(4, entity.getCheckInTime());
+        if (entity.getCheckOutTime() == null) {
+          statement.bindNull(5);
+        } else {
+          statement.bindLong(5, entity.getCheckOutTime());
         }
         if (entity.getNotes() == null) {
-          statement.bindNull(4);
+          statement.bindNull(6);
         } else {
-          statement.bindString(4, entity.getNotes());
+          statement.bindString(6, entity.getNotes());
         }
       }
     };
@@ -207,6 +217,8 @@ public final class VisitDao_Impl implements VisitDao {
         final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
         try {
           final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfName = CursorUtil.getColumnIndexOrThrow(_cursor, "name");
+          final int _cursorIndexOfPhone = CursorUtil.getColumnIndexOrThrow(_cursor, "phone");
           final int _cursorIndexOfCheckInTime = CursorUtil.getColumnIndexOrThrow(_cursor, "checkInTime");
           final int _cursorIndexOfCheckOutTime = CursorUtil.getColumnIndexOrThrow(_cursor, "checkOutTime");
           final int _cursorIndexOfNotes = CursorUtil.getColumnIndexOrThrow(_cursor, "notes");
@@ -215,6 +227,18 @@ public final class VisitDao_Impl implements VisitDao {
             final Visit _item;
             final long _tmpId;
             _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final String _tmpName;
+            if (_cursor.isNull(_cursorIndexOfName)) {
+              _tmpName = null;
+            } else {
+              _tmpName = _cursor.getString(_cursorIndexOfName);
+            }
+            final String _tmpPhone;
+            if (_cursor.isNull(_cursorIndexOfPhone)) {
+              _tmpPhone = null;
+            } else {
+              _tmpPhone = _cursor.getString(_cursorIndexOfPhone);
+            }
             final long _tmpCheckInTime;
             _tmpCheckInTime = _cursor.getLong(_cursorIndexOfCheckInTime);
             final Long _tmpCheckOutTime;
@@ -229,7 +253,7 @@ public final class VisitDao_Impl implements VisitDao {
             } else {
               _tmpNotes = _cursor.getString(_cursorIndexOfNotes);
             }
-            _item = new Visit(_tmpId,_tmpCheckInTime,_tmpCheckOutTime,_tmpNotes);
+            _item = new Visit(_tmpId,_tmpName,_tmpPhone,_tmpCheckInTime,_tmpCheckOutTime,_tmpNotes);
             _result.add(_item);
           }
           return _result;
@@ -256,6 +280,8 @@ public final class VisitDao_Impl implements VisitDao {
         final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
         try {
           final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfName = CursorUtil.getColumnIndexOrThrow(_cursor, "name");
+          final int _cursorIndexOfPhone = CursorUtil.getColumnIndexOrThrow(_cursor, "phone");
           final int _cursorIndexOfCheckInTime = CursorUtil.getColumnIndexOrThrow(_cursor, "checkInTime");
           final int _cursorIndexOfCheckOutTime = CursorUtil.getColumnIndexOrThrow(_cursor, "checkOutTime");
           final int _cursorIndexOfNotes = CursorUtil.getColumnIndexOrThrow(_cursor, "notes");
@@ -264,6 +290,18 @@ public final class VisitDao_Impl implements VisitDao {
             final Visit _item;
             final long _tmpId;
             _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final String _tmpName;
+            if (_cursor.isNull(_cursorIndexOfName)) {
+              _tmpName = null;
+            } else {
+              _tmpName = _cursor.getString(_cursorIndexOfName);
+            }
+            final String _tmpPhone;
+            if (_cursor.isNull(_cursorIndexOfPhone)) {
+              _tmpPhone = null;
+            } else {
+              _tmpPhone = _cursor.getString(_cursorIndexOfPhone);
+            }
             final long _tmpCheckInTime;
             _tmpCheckInTime = _cursor.getLong(_cursorIndexOfCheckInTime);
             final Long _tmpCheckOutTime;
@@ -278,7 +316,7 @@ public final class VisitDao_Impl implements VisitDao {
             } else {
               _tmpNotes = _cursor.getString(_cursorIndexOfNotes);
             }
-            _item = new Visit(_tmpId,_tmpCheckInTime,_tmpCheckOutTime,_tmpNotes);
+            _item = new Visit(_tmpId,_tmpName,_tmpPhone,_tmpCheckInTime,_tmpCheckOutTime,_tmpNotes);
             _result.add(_item);
           }
           return _result;
@@ -308,6 +346,8 @@ public final class VisitDao_Impl implements VisitDao {
         final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
         try {
           final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfName = CursorUtil.getColumnIndexOrThrow(_cursor, "name");
+          final int _cursorIndexOfPhone = CursorUtil.getColumnIndexOrThrow(_cursor, "phone");
           final int _cursorIndexOfCheckInTime = CursorUtil.getColumnIndexOrThrow(_cursor, "checkInTime");
           final int _cursorIndexOfCheckOutTime = CursorUtil.getColumnIndexOrThrow(_cursor, "checkOutTime");
           final int _cursorIndexOfNotes = CursorUtil.getColumnIndexOrThrow(_cursor, "notes");
@@ -315,6 +355,18 @@ public final class VisitDao_Impl implements VisitDao {
           if (_cursor.moveToFirst()) {
             final long _tmpId;
             _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final String _tmpName;
+            if (_cursor.isNull(_cursorIndexOfName)) {
+              _tmpName = null;
+            } else {
+              _tmpName = _cursor.getString(_cursorIndexOfName);
+            }
+            final String _tmpPhone;
+            if (_cursor.isNull(_cursorIndexOfPhone)) {
+              _tmpPhone = null;
+            } else {
+              _tmpPhone = _cursor.getString(_cursorIndexOfPhone);
+            }
             final long _tmpCheckInTime;
             _tmpCheckInTime = _cursor.getLong(_cursorIndexOfCheckInTime);
             final Long _tmpCheckOutTime;
@@ -329,7 +381,7 @@ public final class VisitDao_Impl implements VisitDao {
             } else {
               _tmpNotes = _cursor.getString(_cursorIndexOfNotes);
             }
-            _result = new Visit(_tmpId,_tmpCheckInTime,_tmpCheckOutTime,_tmpNotes);
+            _result = new Visit(_tmpId,_tmpName,_tmpPhone,_tmpCheckInTime,_tmpCheckOutTime,_tmpNotes);
           } else {
             _result = null;
           }

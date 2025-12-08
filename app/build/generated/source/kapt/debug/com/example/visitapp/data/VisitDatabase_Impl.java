@@ -31,12 +31,12 @@ public final class VisitDatabase_Impl extends VisitDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `visits` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `checkInTime` INTEGER NOT NULL, `checkOutTime` INTEGER, `notes` TEXT)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `visits` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `phone` TEXT, `checkInTime` INTEGER NOT NULL, `checkOutTime` INTEGER, `notes` TEXT)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '217bff88519675c5b2830136b22fa280')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4205b4687a401f8dd2af8685b1e4405e')");
       }
 
       @Override
@@ -85,8 +85,10 @@ public final class VisitDatabase_Impl extends VisitDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsVisits = new HashMap<String, TableInfo.Column>(4);
+        final HashMap<String, TableInfo.Column> _columnsVisits = new HashMap<String, TableInfo.Column>(6);
         _columnsVisits.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsVisits.put("name", new TableInfo.Column("name", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsVisits.put("phone", new TableInfo.Column("phone", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsVisits.put("checkInTime", new TableInfo.Column("checkInTime", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsVisits.put("checkOutTime", new TableInfo.Column("checkOutTime", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsVisits.put("notes", new TableInfo.Column("notes", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -101,7 +103,7 @@ public final class VisitDatabase_Impl extends VisitDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "217bff88519675c5b2830136b22fa280", "285f738eaf43fdcf9fc48751f1071d75");
+    }, "4205b4687a401f8dd2af8685b1e4405e", "e3920e4cb7f83d61120db9f0de5c2fe7");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
