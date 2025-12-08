@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema base usando Material Components DayNight (compatible con AAPT) -->
+    <style name="Theme.VisitApp" parent="Theme.MaterialComponents.DayNight">
+        <!-- Personalizaciones opcionales -->
+        <item name="colorPrimary">@android:color/holo_blue_dark</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+    </style>
+
+    <!-- Variante sin ActionBar (si la quieres) -->
+    <style name="Theme.VisitApp.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- aquí no añadimos windowActionBar/windowNoTitle -->
+    </style>
+</resources>

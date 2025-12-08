@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.example.visitapp-merged_res-65:/layout_activity_main.xml.flat",
+        "source": "com.example.visitapp-main-67:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.visitapp-merged_res-65:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.example.visitapp-main-67:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.example.visitapp-merged_res-65:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.example.visitapp-main-67:/drawable/ic_launcher_foreground.xml"
+    }
+]

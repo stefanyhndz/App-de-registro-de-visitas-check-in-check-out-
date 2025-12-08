@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="launcher_background">#FFBB86FC</color>
+    <style name="Theme.VisitApp" parent="Theme.MaterialComponents.DayNight">
+        
+        <item name="colorPrimary">@android:color/holo_blue_dark</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+    </style>
+    <style name="Theme.VisitApp.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        
+    </style>
+</resources>

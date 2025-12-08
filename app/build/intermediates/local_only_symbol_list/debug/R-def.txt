@@ -1,0 +1,11 @@
+R_DEF: Internal format may change without notice
+local
+color launcher_background
+drawable ic_launcher_foreground
+id btnIniciar
+id rvEvents
+id tvStatus
+layout activity_main
+mipmap ic_launcher
+style Theme.VisitApp
+style Theme.VisitApp.NoActionBar
