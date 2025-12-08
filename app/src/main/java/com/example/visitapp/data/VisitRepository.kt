@@ -2,45 +2,41 @@ package com.example.visitapp.data
 
 import kotlinx.coroutines.flow.Flow
 
-interface VisitRepository {
-    val visits: Flow<List<Visit>>
-    suspend fun checkIn(notes: String?): Long
-    suspend fun checkOut(id: Long)
-    suspend fun updateNotes(id: Long, notes: String?)
-    suspend fun delete(id: Long)
-    suspend fun getById(id: Long): Visit?
+/**
+ * Repository que encapsula el acceso a la base de datos (VisitDao).
+ * Provee flujos y funciones suspend para usarse desde el ViewModel.
+ */
+class VisitRepository(private val dao: VisitDao) {
 
-    // nuevo: permite reinsertar exactamente una entidad (útil para undo)
-    suspend fun insertVisit(visit: Visit): Long
-}
+    // Flujo con todas las visitas (historial completo)
+    val allVisits: Flow<List<Visit>> = dao.getAllVisits()
 
-class VisitRepositoryImpl(private val dao: VisitDao) : VisitRepository {
-    override val visits: Flow<List<Visit>> = dao.getAll()
+    // Flujo con solo visitas activas (checkOutTime == null)
+    val activeVisits: Flow<List<Visit>> = dao.getActiveVisits()
 
-    override suspend fun checkIn(notes: String?): Long {
-        val now = System.currentTimeMillis()
-        val visit = Visit(checkInTime = now, notes = notes)
+    // Inserta una visita (check-in). Devuelve el id generado.
+    suspend fun insertVisit(visit: Visit): Long {
         return dao.insert(visit)
     }
 
-    override suspend fun checkOut(id: Long) {
-        val now = System.currentTimeMillis()
-        dao.setCheckOutTime(id, now)
+    // Marca check-out de una visita existente
+    suspend fun checkOut(id: Long) {
+        dao.updateCheckOut(id, System.currentTimeMillis())
     }
 
-    override suspend fun updateNotes(id: Long, notes: String?) {
-        val v = dao.getById(id) ?: return
-        dao.update(v.copy(notes = notes))
+    // Actualiza la nota de una visita
+    suspend fun updateNotes(id: Long, notes: String?) {
+        dao.updateNotes(id, notes)
     }
 
-    override suspend fun delete(id: Long) {
+    // Borra una visita por id (si tu DAO tiene delete)
+    suspend fun delete(id: Long) {
         dao.deleteById(id)
     }
 
-    override suspend fun getById(id: Long): Visit? = dao.getById(id)
-
-    // Implementación añadida para cumplir la interfaz
-    override suspend fun insertVisit(visit: Visit): Long {
-        return dao.insert(visit)
+    // Recupera una visita por id (si tu DAO tiene getById)
+    suspend fun getById(id: Long): Visit? {
+        return dao.getById(id)
     }
 }
+
